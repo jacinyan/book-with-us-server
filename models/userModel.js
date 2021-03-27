@@ -18,8 +18,6 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: true,
-            min: 6,
-            max: 64
         },
         stripe_account_id: '',
         stripe_seller: {},
