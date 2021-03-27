@@ -28,6 +28,11 @@ const userSchema = new Schema(
     }
 )
 
+//user instance method
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password)
+  }
+
 userSchema.pre('save', async function (next) {
     try {
         // this ==> user instance

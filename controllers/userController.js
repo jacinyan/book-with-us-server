@@ -1,13 +1,30 @@
 const User = require('../models/userModel')
 
-exports.authUser = (req, res) => {
-    res.send('ok')
+exports.authUser = async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        const user = await User.findOne({ email })
+
+        if (user && (await user.matchPassword(password))) {
+            res.json({
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+            })
+        } else {
+            throw new Error('Invalid email or password')
+        }
+        
+    } catch (error) {
+        res.status(401).send(error.message)
+    }
 }
 
 exports.registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body
-        
+
         // password < 6
         if (password && password.length < 6) {
             throw new Error('Password is 6 characters minimum')
@@ -36,7 +53,7 @@ exports.registerUser = async (req, res) => {
         }
 
     } catch (error) {
-        if(error.errors){
+        if (error.errors) {
             res.status(400).send('Invalid user data')
             return
         };
