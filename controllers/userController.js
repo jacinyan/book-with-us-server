@@ -7,40 +7,40 @@ exports.authUser = (req, res) => {
 exports.registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body
+        
         // password < 6
-        if (!password || password.length < 6) {
-            res.status(400)
-            throw new Error('Password must be at least 6 chars long  ')
+        if (password && password.length < 6) {
+            throw new Error('Password is 6 characters minimum')
         }
 
-        // if exists
+        // if user exists
         const userExists = await User.findOne({ email })
         if (userExists) {
-            res.status(400)
             throw new Error('User already exists')
         }
 
-        // if doesn't exist, create
+        // if user doesn't exist, create
         const user = await User.create({
             username,
             email,
             password,
         })
-        console.log(user)
 
+        // final validation
         if (user) {
             res.status(201).json({
                 _id: user._id,
-                name: user.name,
+                username: user.username,
                 email: user.email,
             })
-        } else {
-            res.status(400)
-            throw new Error('Invalid user data')
         }
 
     } catch (error) {
-        res.json({errorMsg: error.message})
+        if(error.errors){
+            res.status(400).send('Invalid user data')
+            return
+        };
+        res.status(400).send(error.message)
     }
 }
 
