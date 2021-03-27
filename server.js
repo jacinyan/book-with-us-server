@@ -10,8 +10,10 @@ require('dotenv').config({ path: '.env' })
 
 connectDB()
 
+// middleware
 app.use(cors())
 app.use(morgan('dev'))
+app.use(express.json())
 
 // dynamic routing
 readdirSync('./routes').map(r => app.use('/api', require(`./routes/${r}`)))
