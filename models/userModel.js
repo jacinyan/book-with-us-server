@@ -28,31 +28,37 @@ const userSchema = new Schema(
     }
 )
 
-//user instance method
-userSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password)
-  }
-
 userSchema.pre('save', async function (next) {
     try {
         // this ==> user instance
         // only hash the password if it has been modified (or is new)
         if (!this.isModified('password')) {
-           return next()
+            return next()
         }
-
+        
         // generate a salt
         const salt = await bcrypt.genSalt(10)
         // hash the password along with our new salt
         const hash = await bcrypt.hash(this.password, salt);
         // override the cleartext password with the hashed one
         this.password = hash;
-
+        
         next()
     } catch (error) {
         return next(error)
     }
 })
+
+//compare hashed password in db and entered password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    try {
+        const match =  await bcrypt.compare(enteredPassword, this.password)
+        return match
+    } catch (error) {
+        console.log(error)
+        throw new Error('Server is busy please try again later')
+    }
+}
 
 const User = mongoose.model('User', userSchema)
 

@@ -1,21 +1,23 @@
 const User = require('../models/userModel')
+const generateToken = require('../utils/generateToken')
 
 exports.authUser = async (req, res) => {
     try {
         const { email, password } = req.body
 
         const user = await User.findOne({ email })
-
+        // check boolean result of password comparison
         if (user && (await user.matchPassword(password))) {
             res.json({
                 _id: user._id,
                 username: user.username,
                 email: user.email,
+                token: generateToken(user._id)
             })
         } else {
             throw new Error('Invalid email or password')
         }
-        
+
     } catch (error) {
         res.status(401).send(error.message)
     }
