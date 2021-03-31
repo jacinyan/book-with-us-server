@@ -19,9 +19,11 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        stripe_account_id: '',
-        stripe_seller: {},
-        stripeSession: {}
+        isAdmin : {
+            type: Boolean,
+            required: true,
+            default: false
+        }
     },
     {
         timestamps: true,

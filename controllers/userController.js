@@ -19,7 +19,7 @@ exports.authUser = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(401).send(error.message)
+        res.status(401).json(error.message)
     }
 }
 
@@ -56,10 +56,10 @@ exports.registerUser = async (req, res) => {
 
     } catch (error) {
         if (error.errors) {
-            res.status(400).send('Invalid user data')
+            res.status(400).json('Invalid user data')
             return
         };
-        res.status(400).send(error.message)
+        res.status(400).json(error.message)
     }
 }
 
