@@ -8,13 +8,16 @@ const reviewSchema = new Schema({
 },
     {
         timestamps: true
-    })
+    }
+)
 
 const bookSchema = new Schema(
     {
         user: {
+            // info: mongoose.Schema.Types.Mixed 
+            // determine which admin creates the book product by the userID
             type: mongoose.Schema.Types.ObjectId,
-            require: true,
+            required: true,
             ref: 'User'
         },
         image: {
@@ -32,7 +35,8 @@ const bookSchema = new Schema(
             type: String,
             required: true
         },
-        review: [reviewSchema],
+        // array of review objects
+        reviews: [reviewSchema],
         rating: {
             type: Number,
             required: true,
