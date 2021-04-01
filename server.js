@@ -20,7 +20,7 @@ app.use(morgan('dev'))
 app.use(express.json())
 // dynamic routing
 readdirSync(path.join(__dirname, 'routes')).forEach(
-    fileName => app.use('/api', require(`./routes/${fileName}`))
+    fileName => app.use('/api', require(path.join(__dirname, 'routes') + `/${fileName}`))
 )
 app.use(notFound)
 // catch-all

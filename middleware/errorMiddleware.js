@@ -3,7 +3,7 @@ const notFound = (req,res,next)=>{
     res.status(404)
     next(error)
 }
-
+// first, and should be the only one with err param
 const errorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode
     res.status(statusCode)

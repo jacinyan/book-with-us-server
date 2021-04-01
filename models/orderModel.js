@@ -14,10 +14,10 @@ const orderSchema = new Schema(
                 quantity: { type: Number, required: true },
                 image: { type: String, required: true },
                 price: { type: Number, required: true },
-                book: {
+                item: {
                     type: mongoose.Schema.Types.ObjectId,
                     required: true,
-                    ref: 'Book'
+                    ref: 'Item'
                 }
             }
         ],
