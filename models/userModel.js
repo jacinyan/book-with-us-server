@@ -47,18 +47,17 @@ userSchema.pre('save', async function (next) {
         
         next()
     } catch (error) {
-        return next(error)
+        next(error)
     }
 })
 
 //compare hashed password in db and entered password
-userSchema.methods.matchPassword = async function (enteredPassword) {
+userSchema.methods.matchPassword = async function (enteredPassword, next) {
     try {
         const match =  await bcrypt.compare(enteredPassword, this.password)
         return match
     } catch (error) {
-        console.log(error)
-        throw new Error('Server is busy please try again later')
+       next(error)
     }
 }
 

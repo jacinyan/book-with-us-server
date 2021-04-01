@@ -1,12 +1,12 @@
 const User = require('../models/userModel')
 const generateToken = require('../utils/generateToken')
 
-exports.authUser = async (req, res) => {
+exports.authUser = async (req, res, next) => {
     try {
         const { email, password } = req.body
 
         const user = await User.findOne({ email })
-        // check boolean result of password comparison
+        // check boolean of password comparison
         if (user && (await user.matchPassword(password))) {
             res.json({
                 _id: user._id,
@@ -19,11 +19,11 @@ exports.authUser = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(401).json(error.message)
+        next(error)
     }
 }
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body
 
@@ -55,11 +55,7 @@ exports.registerUser = async (req, res) => {
         }
 
     } catch (error) {
-        if (error.errors) {
-            res.status(400).json('Invalid user data')
-            return
-        };
-        res.status(400).json(error.message)
+        next(error)
     }
 }
 
