@@ -1,11 +1,12 @@
 const express = require('express')
 const morgan = require('morgan')
 const path = require('path')
-const connectDB = require('./db')
 const cors = require('cors')
 
-const { notFound, errorHandler } = require('./middleware/errorMiddleware')
+const { connectDB } = require('./db')
 const { readdirSync } = require('fs')
+
+const { notFound, errorHandler } = require('./middleware/errorMiddleware')
 
 const app = express()
 
@@ -13,7 +14,6 @@ require('dotenv').config({ path: '.env' })
 require('colors')
 
 connectDB()
-
 
 app.use(cors())
 app.use(morgan('dev'))

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const connectDB = async () => {
+exports.connectDB = async () => {
     try {
         const connect = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/books-r-us', {
             useUnifiedTopology: true,
@@ -14,4 +14,3 @@ const connectDB = async () => {
     }
 }
 
-module.exports = connectDB

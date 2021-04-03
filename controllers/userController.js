@@ -1,61 +1,132 @@
-const User = require('../models/userModel')
-const generateToken = require('../utils/generateToken')
+const User = require("../models/userModel");
+const { generateToken } = require("../utils/generateToken");
 
-exports.authUser = async (req, res, next) => {
-    try {
-        const { email, password } = req.body
+// @desc     Auth users & get token
+// @route    POST /api/users/login
+// @access   Public
+const authUser = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-        const user = await User.findOne({ email })
-        // check boolean of password comparison
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                token: generateToken(user._id)
-            })
-        } else {
-            throw new Error('Invalid email or password')
-        }
-
-    } catch (error) {
-        next(error)
+    const user = await User.findOne({ email });
+    
+    // check boolean of password comparison
+    if (user && (await user.matchPassword(password))) {
+      res.json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401);
+      throw new Error("Invalid email or password");
     }
-}
+  } catch (error) {
+    next(error);
+  }
+};
 
-exports.registerUser = async (req, res, next) => {
-    try {
-        const { username, email, password } = req.body
+// @desc     Register a new user
+// @route    POST /api/users/register
+// @access   Public
+const registerUser = async (req, res, next) => {
+  try {
+    const { username, email, password } = req.body;
 
-        // password < 6
-        if (password && password.length < 6) {
-            throw new Error('Password is 6 characters minimum')
-        }
-
-        // if user exists
-        const userExists = await User.findOne({ email })
-        if (userExists) {
-            throw new Error('User already exists')
-        }
-
-        // if user doesn't exist, create
-        const user = await User.create({
-            username,
-            email,
-            password,
-        })
-
-        // final validation
-        if (user) {
-            res.status(201).json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-            })
-        }
-
-    } catch (error) {
-        next(error)
+    // if password length < 6
+    if (password && password.length < 6) {
+      res.status(400);
+      throw new Error("Password is 6 characters minimum");
     }
-}
 
+    // if user exists
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
+
+    try {
+      // catch errors from User schema
+      const user = await User.create({
+        username,
+        email,
+        password,
+      });
+      if (user) {
+        res.status(201).json({
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+        });
+      }
+    } catch (error) {
+      res.status(400);
+      throw new Error("Invalid user data");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc     Get user profile
+// @route    Get /api/users/profile
+// @access   Private
+const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      res.json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc     update user profile
+// @route    PUT /api/users/profile
+// @access   Private
+const updateUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.username = req.body.username || user.username;
+      user.email = req.body.email || user.email;
+      user.username = req.body.username || user.username;
+      if(req.body.password){
+        user.password = req.body.password
+      }
+      const updatedUser = await user.save()
+      res.json({
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+        token: generateToken(updatedUser._id),
+      });
+
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  authUser,
+  registerUser,
+  getUserProfile,
+  updateUserProfile
+};
