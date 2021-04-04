@@ -4,7 +4,7 @@ const User = require("../models/userModel");
 const protect = async (req, res, next) => {
   try {
     let token;
-
+    
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -17,7 +17,6 @@ const protect = async (req, res, next) => {
 
         next();
       } catch (error) {
-        console.error(error);
         res.status(401);
         throw new Error("Not authorized, token failed");
       }
