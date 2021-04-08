@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
+//
 const reviewSchema = new Schema({
     name: { type: String, required: true },
     rating: { type: Number, required: true },
@@ -13,9 +14,9 @@ const reviewSchema = new Schema({
 
 const itemSchema = new Schema(
     {
+        // determine which admin creates the item by the adminId
         user: {
             // info: mongoose.Schema.Types.Mixed 
-            // determine which admin creates the item by the userID
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'User'

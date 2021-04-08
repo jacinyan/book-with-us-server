@@ -12,6 +12,14 @@ const protect = async (req, res, next) => {
       try {
         token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        /* 
+        Query.prototype.select()  
+        include a and b, exclude other fields  
+        query.select('a b');
+
+        exclude c and d, include other fields  
+        query.select('-c -d'); 
+        */
         // set req, and pass over to getUserProfile
         req.user = await User.findById(decoded.id).select("-password");
 
