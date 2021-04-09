@@ -1,3 +1,4 @@
+const { json } = require("express");
 const Order = require("../models/orderModel");
 
 // @desc     Create new order
@@ -85,8 +86,21 @@ const updateOrderToPaid = async (req, res, next) => {
   }
 };
 
+// @desc     Get logged in user orders
+// @route    GET /api/orders/my-orders
+// @access   Private
+const getMyOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ user: req.user._id });
+    res.json(orders);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
+  getMyOrders,
 };

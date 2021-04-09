@@ -126,9 +126,27 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
+// @desc     Get all users
+// @route    Get /api/users
+// @access   Private/Admin
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({});
+    if(users){
+      res.json(users)
+    } else {
+      res.status(404)
+      throw new Error('Users not found')
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   authUser,
   registerUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  getUsers
 };
