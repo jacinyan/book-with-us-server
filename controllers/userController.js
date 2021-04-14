@@ -13,9 +13,9 @@ const authUser = async (req, res, next) => {
     // check boolean of password comparison
     if (user && (await user.matchPassword(password))) {
       res.json({
-        _id: user._id,
+        // _id: user._id,
         username: user.username,
-        email: user.email,
+        // email: user.email,
         isAdmin: user.isAdmin,
         token: generateToken(user._id),
       });
@@ -57,9 +57,9 @@ const registerUser = async (req, res, next) => {
       });
       if (user) {
         res.status(201).json({
-          _id: user._id,
+          // _id: user._id,
           username: user.username,
-          email: user.email,
+          // email: user.email,
           isAdmin: user.isAdmin,
           token: generateToken(user._id),
         });
