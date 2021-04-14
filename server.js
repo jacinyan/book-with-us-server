@@ -18,11 +18,13 @@ connectDB();
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+//static resources
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // dynamic routing
 readdirSync(path.join(__dirname, "routes")).forEach((fileName) =>
   app.use("/api", require(path.join(__dirname, "routes") + `/${fileName}`))
 );
-//paypal route
+//paypal
 app.get("/api/config/paypal", (req, res) =>
   res.send(process.env.PAYPAL_CLIENT_ID)
 );
