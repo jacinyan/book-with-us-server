@@ -109,9 +109,9 @@ const updateUserProfile = async (req, res, next) => {
       }
       const updatedUser = await user.save();
       res.json({
-        _id: updatedUser._id,
+        // _id: updatedUser._id,
         username: updatedUser.username,
-        email: updatedUser.email,
+        // email: updatedUser.email,
         isAdmin: updatedUser.isAdmin,
         token: generateToken(updatedUser._id),
       });
