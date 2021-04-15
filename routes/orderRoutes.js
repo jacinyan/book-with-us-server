@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middleware/authMiddleware");
+const { protect,admin } = require("../middleware/authMiddleware");
 const {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
-  getMyOrders
+  getMyOrders,
+  getOrders
 } = require("../controllers/orderController");
 
-router.route('/orders').post(protect, addOrderItems);
+router.route('/orders').post(protect, addOrderItems).get(protect, admin, getOrders);
 router.route('/orders/my-orders').get(protect, getMyOrders);
 // matching sequence matters
 router.route('/orders/:id').get(protect, getOrderById)

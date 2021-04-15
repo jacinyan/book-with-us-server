@@ -98,9 +98,22 @@ const getMyOrders = async (req, res, next) => {
   }
 };
 
+// @desc     Get all orders
+// @route    GET /api/orders
+// @access   Private/Admin
+const getOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({}).populate('user', 'id username');
+    res.json(orders);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addOrderItems,
   getOrderById,
   updateOrderToPaid,
   getMyOrders,
+  getOrders
 };
