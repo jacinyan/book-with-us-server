@@ -96,8 +96,48 @@ const updateItem = async (req, res, next) => {
       item.image = image;
       item.countInStock = countInStock;
 
-      const updateItem = await item.save();
-      res.json(updateItem);
+      const updatedItem = await item.save();
+      res.json(updatedItem);
+    } else {
+      res.status(404);
+      throw new Error("Item not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc     Create a new review
+// @route    POST /api/items/:id/reviews
+// @access   Private
+const createItemReview = async (req, res, next) => {
+  try {
+    const { rating, comment } = req.body;
+
+    const item = await Item.findById(req.params.id);
+
+    if (item) {
+      const alreadyReviewed = item.reviews.find(
+        (review) => review.user.toString() === req.user._id.toString()
+      );
+      if (alreadyReviewed) {
+        res.status(400);
+        throw new Error("Item already reviewed");
+      }
+      const review = {
+        name: req.user.username,
+        rating: Number(rating),
+        comment,
+        user: req.user._id,
+      };
+      item.reviews.push(review);
+      item.numReviews = item.reviews.length;
+      item.rating =
+        item.reviews.reduce((prev, curr) => curr.rating + prev, 0) /
+        item.reviews.length;
+
+      await item.save();
+      res.status(201).json({ message: "Review added" });
     } else {
       res.status(404);
       throw new Error("Item not found");
@@ -113,4 +153,5 @@ module.exports = {
   deleteItem,
   createItem,
   updateItem,
+  createItemReview,
 };

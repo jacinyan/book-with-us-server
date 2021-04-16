@@ -6,6 +6,7 @@ const {
   deleteItem,
   updateItem,
   createItem,
+  createItemReview
 } = require("../controllers/itemController");
 const { protect, admin } = require("../middleware/authMiddleware");
 
@@ -15,5 +16,6 @@ router
   .get(getItemById)
   .delete(protect, admin, deleteItem)
   .put(protect, admin, updateItem);
+router.route("/items/:id/reviews").post(protect,createItemReview)
 
 module.exports = router;
