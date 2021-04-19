@@ -6,17 +6,24 @@ const Order = require("../models/orderModel");
 // @access   Public
 const getItems = async (req, res, next) => {
   try {
-    const keyword = req.query.keyword
+    const pageSize = 3;
+    const page = Number(req.query.pageNumber) || 1;
+
+    const search = req.query.search
       ? {
           name: {
-            $regex: req.query.keyword,
+            $regex: req.query.search,
             $options: "i",
           },
         }
       : {};
 
-    const items = await Item.find({ ...keyword });
-    res.json(items);
+    const count = await Item.countDocuments({ ...search });
+    const items = await Item.find({ ...search })
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    res.json({items, page, pages: Math.ceil(count /pageSize)});
   } catch (error) {
     next(error);
   }
