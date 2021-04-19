@@ -6,8 +6,9 @@ const Order = require("../models/orderModel");
 // @access   Public
 const getItems = async (req, res, next) => {
   try {
-    const pageSize = 3;
-    const page = Number(req.query.pageNumber) || 1;
+    const pageSize = 8;
+    //?page=2
+    const page = Number(req.query.page) || 1;
 
     const search = req.query.search
       ? {
@@ -17,13 +18,16 @@ const getItems = async (req, res, next) => {
           },
         }
       : {};
-
+    //total count of items
     const count = await Item.countDocuments({ ...search });
+
     const items = await Item.find({ ...search })
+      // ensures each page has a number, which equals the pageSize, of items
       .limit(pageSize)
+      // ensures each page has the correct starting item
       .skip(pageSize * (page - 1));
 
-    res.json({items, page, pages: Math.ceil(count /pageSize)});
+    res.json({ items, page, pages: Math.ceil(count / pageSize) });
   } catch (error) {
     next(error);
   }
