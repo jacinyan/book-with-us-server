@@ -1,11 +1,21 @@
 const Item = require("../models/itemModel");
+const Order = require("../models/orderModel");
 
 // @desc     Fetch all items
 // @route    GET /api/items
 // @access   Public
 const getItems = async (req, res, next) => {
   try {
-    const items = await Item.find({});
+    const keyword = req.query.keyword
+      ? {
+          name: {
+            $regex: req.query.keyword,
+            $options: "i",
+          },
+        }
+      : {};
+
+    const items = await Item.find({ ...keyword });
     res.json(items);
   } catch (error) {
     next(error);
@@ -116,16 +126,38 @@ const createItemReview = async (req, res, next) => {
 
     const item = await Item.findById(req.params.id);
 
+    // bring in all user orders first for a following check-up
+    const orders = await Order.find({ user: req.user._id });
+
+    // an array of ids of all the items the user ordered so far
+    const orderedItemsId = [].concat.apply(
+      [],
+      orders.map((order) =>
+        order.orderItems.map((item) => item.item.toString())
+      )
+    );
+
+    console.log(orderedItemsId);
+
     if (item) {
+      // check if the id of the item matches at least one of the users ordered items
+      const hasOrdered = orderedItemsId.includes(item._id.toString());
+
+      if (!hasOrdered) {
+        res.status(400);
+        throw new Error("You can only review your ordered items");
+      }
+
       const alreadyReviewed = item.reviews.find(
         (review) => review.user.toString() === req.user._id.toString()
       );
+      // one review per customer only
       if (alreadyReviewed) {
         res.status(400);
-        throw new Error("Item already reviewed");
+        throw new Error("You've already reviewed the item");
       }
       const review = {
-        name: req.user.username,
+        username: req.user.username,
         rating: Number(rating),
         comment,
         user: req.user._id,
