@@ -190,6 +190,18 @@ const createItemReview = async (req, res, next) => {
   }
 };
 
+// @desc     Get top rated books
+// @route    GET /api/items/top
+// @access   Public
+const getTopItems = async (req, res, next) => {
+  try {
+    const items = await Item.find({}).sort({ rating: -1 }).limit(3);
+    res.json(items)
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getItems,
   getItemById,
@@ -197,4 +209,5 @@ module.exports = {
   createItem,
   updateItem,
   createItemReview,
+  getTopItems
 };
