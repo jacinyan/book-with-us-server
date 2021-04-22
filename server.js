@@ -10,7 +10,7 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
 
-const itemRoutes = require ('./routes/itemsRoutes.js')
+const itemRoutes = require ('./routes/itemRoutes.js')
 const userRoutes = require ('./routes/userRoutes.js')
 const orderRoutes = require ('./routes/orderRoutes.js')
 const uploadRoutes = require ('./routes/uploadRoutes.js')
