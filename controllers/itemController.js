@@ -77,7 +77,7 @@ const createItem = async (req, res, next) => {
       name: "Sample name",
       price: 0,
       user: req.user._id,
-      image: "https://dummyimage.com/200X300/145e0d/ffffff",
+      image: "https://dummyimage.com/200X300/d3d3d3/ffffff",
       genre: "Sample genre",
       author: "Sample author",
       countInStock: 0,
