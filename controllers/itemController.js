@@ -195,6 +195,7 @@ const createItemReview = async (req, res, next) => {
 // @access   Public
 const getTopItems = async (req, res, next) => {
   try {
+    //sort by rating
     const items = await Item.find({}).sort({ rating: -1 }).limit(3);
     res.json(items)
   } catch (error) {
