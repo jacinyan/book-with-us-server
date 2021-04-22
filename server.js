@@ -30,10 +30,10 @@ if (process.env.NODE_ENV === "development") {
     app.use("/api", require(path.join(__dirname, "routes") + `/${fileName}`))
   );
 } else {
-  app.use('api/', itemRoutes)
-  app.use('api/', userRoutes)
-  app.use('api/', orderRoutes)
-  app.use('api/', uploadRoutes)
+  app.use('/api', itemRoutes)
+  app.use('/api', userRoutes)
+  app.use('/api', orderRoutes)
+  app.use('/api', uploadRoutes)
 }
 
 //paypal
