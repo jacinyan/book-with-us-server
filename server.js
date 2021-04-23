@@ -19,7 +19,7 @@ connectDB();
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-
+//
 readdirSync(path.join(__dirname, "routes")).forEach((fileName) =>
     app.use("/api", require(path.join(__dirname, "routes") + `/${fileName}`))
   );
