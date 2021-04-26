@@ -26,14 +26,15 @@ const getItems = async (req, res, next) => {
         price: { $gte: minPrice, $lte: maxPrice },
       };
 
-      const genre = req.query.genre && req.query.genre !== "-"
-        ? {
-            genre: {
-              $regex: req.query.genre,
-              $options: "i",
-            },
-          }
-        : {};
+      const genre =
+        req.query.genre && req.query.genre !== "-"
+          ? {
+              genre: {
+                $regex: req.query.genre,
+                $options: "i",
+              },
+            }
+          : {};
 
       const rating = req.query.rating
         ? {
@@ -45,7 +46,10 @@ const getItems = async (req, res, next) => {
     };
 
     //total count of items
-    const count = await Item.countDocuments({ ...search, ...handleFilteredParams() });
+    const count = await Item.countDocuments({
+      ...search,
+      ...handleFilteredParams(),
+    });
 
     const items = await Item.find({ ...search, ...handleFilteredParams() })
       // ensures each page has a number, which equals the pageSize, of items
@@ -53,9 +57,19 @@ const getItems = async (req, res, next) => {
       // ensures each page has the correct starting item
       .skip(pageSize * (page - 1));
 
-    const allItemGenres = await Item.distinct('genre')
+    //exclude duplicates of item genres
+    const allItemGenres = await Item.distinct("genre");
 
-    res.json({ items, page, pages: Math.ceil(count / pageSize), allItemGenres });
+    if (Math.ceil(count / pageSize) < page) {
+      res.json({ items, page, pages: page, allItemGenres });
+    } else {
+      res.json({
+        items,
+        page,
+        pages: Math.ceil(count / pageSize),
+        allItemGenres,
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -175,8 +189,6 @@ const createItemReview = async (req, res, next) => {
         order.orderItems.map((item) => item.item.toString())
       )
     );
-
-    console.log(orderedItemsId);
 
     if (item) {
       // check if the id of the item matches at least one of the users ordered items
