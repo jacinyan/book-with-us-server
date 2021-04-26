@@ -2,12 +2,11 @@ const Item = require("../models/itemModel");
 const Order = require("../models/orderModel");
 
 // @desc     Fetch all items
-// @route    GET /api/items
+// @route    GET /api/items?search=something&page=1
 // @access   Public
 const getItems = async (req, res, next) => {
   try {
     const pageSize = 8;
-    //?page=2
     const page = Number(req.query.page) || 1;
 
     const search = req.query.search
@@ -18,16 +17,45 @@ const getItems = async (req, res, next) => {
           },
         }
       : {};
-    //total count of items
-    const count = await Item.countDocuments({ ...search });
 
-    const items = await Item.find({ ...search })
+    const handleFilteredParams = () => {
+      const minPrice = Number(req.query.minPrice) || 0;
+      const maxPrice = Number(req.query.maxPrice) || 200;
+
+      const price = {
+        price: { $gte: minPrice, $lte: maxPrice },
+      };
+
+      const genre = req.query.genre && req.query.genre !== "-"
+        ? {
+            genre: {
+              $regex: req.query.genre,
+              $options: "i",
+            },
+          }
+        : {};
+
+      const rating = req.query.rating
+        ? {
+            rating: Number(req.query.rating),
+          }
+        : {};
+
+      return { ...price, ...genre, ...rating };
+    };
+
+    //total count of items
+    const count = await Item.countDocuments({ ...search, ...handleFilteredParams() });
+
+    const items = await Item.find({ ...search, ...handleFilteredParams() })
       // ensures each page has a number, which equals the pageSize, of items
       .limit(pageSize)
       // ensures each page has the correct starting item
       .skip(pageSize * (page - 1));
 
-    res.json({ items, page, pages: Math.ceil(count / pageSize) });
+    const allItemGenres = await Item.distinct('genre')
+
+    res.json({ items, page, pages: Math.ceil(count / pageSize), allItemGenres });
   } catch (error) {
     next(error);
   }
@@ -197,7 +225,7 @@ const getTopItems = async (req, res, next) => {
   try {
     //sort by rating
     const items = await Item.find({}).sort({ rating: -1 }).limit(3);
-    res.json(items)
+    res.json(items);
   } catch (error) {
     next(error);
   }
@@ -210,5 +238,5 @@ module.exports = {
   createItem,
   updateItem,
   createItemReview,
-  getTopItems
+  getTopItems,
 };
